@@ -1,0 +1,59 @@
+---
+title: "CC3"
+output: github_document
+author: LE COZ SARAH
+---
+```{r library, include=FALSE}
+library(stringr)
+library(rmarkdown)
+library(knitr)
+library(phyloseq)
+library(dada2)
+library(DECIPHER)
+library(phangorn)
+library(ggplot2)
+library(gridExtra)
+library(shiny)
+library(miniUI)
+library(caret)
+library(pls)
+library(e1071)
+library(ggplot2)
+library(randomForest)
+library(dplyr)
+library(ggrepel)
+#library(nlme)
+library(devtools)
+library(reshape2)
+library(PMA)
+#library(structSSI)
+library(ade4)
+library(ggnetwork)
+library(intergraph)
+library(scales)
+library(genefilter)
+library(impute)
+library(phyloseqGraphTest)
+library(Biostrings)
+library(RSQLite)
+library(parallel)
+library(ape)
+```
+
+# méthode de séquençage utilisée : Illumina HiSeq 2500 sequencing; 16S rRNA
+# séquençage du microbiote du vagin et de l'utérus de femmes en bonne santé et de femmes atteintes d'endométriose.
+
+```{bash, eval=FALSE}
+mkdir data
+wget -P data -i URL
+```
+
+```{bash}
+cd data
+gunzip -d *.gz
+```
+
+```{r path}
+path <- "data"
+list.files(path)
+```
