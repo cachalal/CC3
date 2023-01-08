@@ -43,7 +43,7 @@ library(ape)
 # méthode de séquençage utilisée : Illumina HiSeq 2500 sequencing; 16S rRNA
 # séquençage du microbiote du vagin et de l'utérus de femmes en bonne santé et de femmes atteintes d'endométriose.
 
-```{bash, eval=FALSE}
+```{bash, echo=FALSE}
 mkdir data
 wget -P data -i URL
 ```
@@ -53,7 +53,7 @@ cd data
 #gunzip -d *.gz
 ```
 
-```{r path, eval=FALSE}
+```{r path, echo=FALSE}
 path <- "data"
 list.files(path)
 ```
@@ -107,7 +107,7 @@ plotErrors(errF, nominalQ=TRUE)
 dadaFs <- dada(filtFs, err=errF, multithread=TRUE)
 ```
 
-```{r, eval=FALSE}
+```{r, echo=FALSE}
 dadaRs <- dada(filtRs, err=errR, multithread=TRUE)
 ```
 
