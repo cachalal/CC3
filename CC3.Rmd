@@ -50,10 +50,10 @@ wget -P data -i URL
 
 ```{bash}
 cd data
-gunzip -d *.gz
+#gunzip -d *.gz
 ```
 
-```{r path}
+```{r path, eval=FALSE}
 path <- "data"
 list.files(path)
 ```
@@ -82,3 +82,95 @@ filtRs <- file.path(path, "filtered", paste0(sample.names, "_2_filt.fastq"))
 names(filtFs) <- sample.names
 names(filtRs) <- sample.names
 ```
+
+```{r}
+out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs, trimLeft = c(21,21), truncLen=c(70,70),
+              maxN=0, maxEE=c(2,2), truncQ=2, rm.phix=TRUE,
+              compress=TRUE, multithread=TRUE)
+head(out)
+```
+
+```{r errF}
+errF <- learnErrors(filtFs, multithread=TRUE)
+```
+
+```{r errR}
+errR <- learnErrors(filtRs, multithread=TRUE)
+```
+
+```{r plotErrors}
+plotErrors(errF, nominalQ=TRUE)
+```
+
+```{r, eval=FALSE}
+#algorithme d'inference de l'echantillon
+dadaFs <- dada(filtFs, err=errF, multithread=TRUE)
+```
+
+```{r, eval=FALSE}
+dadaRs <- dada(filtRs, err=errR, multithread=TRUE)
+```
+
+```{r}
+dadaFs[[1]]
+```
+
+```{r}
+#fusion des reads avant et arriere
+mergers <- mergePairs(dadaFs, filtFs, dadaRs, filtRs, verbose=TRUE)
+#Les lectures appariees qui ne se chevauchaient pas exactement ont ete supprimees par mergePairs, ce qui a permis de reduire davantage les resultats errones.
+# Inspection du data.frame de fusion du premier echantillon
+head(mergers[[1]])
+```
+
+```{r seqtab}
+# construction tableau des variantes de sequences d'amplicons
+seqtab <- makeSequenceTable(mergers)
+dim(seqtab)
+# pour avoir les longueurs de séquence
+table(nchar(getSequences(seqtab)))
+```
+
+```{r chimeres zou}
+# pour retirer les chimeres
+seqtab.nochim <- removeBimeraDenovo(seqtab, method="consensus", multithread=TRUE, verbose=TRUE)
+dim(seqtab.nochim)
+```
+
+```{r sum}
+sum(seqtab.nochim)/sum(seqtab)
+```
+
+```{r examen}
+# examiner le nombre de reads qui ont franchi chaque étape du pipeline
+getN <- function(x) sum(getUniques(x))
+track <- cbind(out, sapply(dadaFs, getN), sapply(dadaRs, getN), sapply(mergers, getN), rowSums(seqtab.nochim))
+colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim")
+rownames(track) <- sample.names
+head(track)
+```
+
+```{bash, echo=FALSE}
+# acqisition de la base de données pour creer la taxonomie
+wget https://zenodo.org/record/4587955/files/silva_nr99_v138.1_train_set.fa.gz?download=1
+```
+
+```{r taxa}
+taxa <- assignTaxonomy(seqtab.nochim, "silva_nr99_v138.1_train_set.fa.gz?download=1", multithread=TRUE)
+```
+
+```{r taxa print}
+# Suppression des noms de sequence pour l'affichage uniquement
+taxa.print <- taxa
+rownames(taxa.print) <- NULL
+head(taxa.print)
+```
+
+```{r library}
+library(phyloseq); packageVersion("phyloseq")
+library(Biostrings); packageVersion("Biostrings")
+library(ggplot2); packageVersion("ggplot2")
+```
+
+```{r theme}
+theme_set(theme_bw())
