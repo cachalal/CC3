@@ -57,3 +57,28 @@ gunzip -d *.gz
 path <- "data"
 list.files(path)
 ```
+
+```{r}
+# Creer une variable qui contient les donnees finissant par _R1 ou _R2 pour les trier par ordre alphabetique
+fnFs <- sort(list.files(path, pattern="_R1.fastq", full.names=TRUE))
+fnRs <- sort(list.files(path, pattern="_R2.fastq", full.names=TRUE))
+# pour avoir le nom du fichier
+sample.names <- sapply(strsplit(basename(fnFs), "_R"), `[`, 1)
+```
+
+```{r}
+plotQualityProfile(fnFs[1:2])
+```
+
+
+```{r}
+plotQualityProfile(fnRs[1:2])
+```
+
+```{r}
+# Place filtered files in filtered/ subdirectory
+filtFs <- file.path(path, "filtered", paste0(sample.names, "_F_filt.fastq.gz"))
+filtRs <- file.path(path, "filtered", paste0(sample.names, "_R_filt.fastq.gz"))
+names(filtFs) <- sample.names
+names(filtRs) <- sample.names
+```
