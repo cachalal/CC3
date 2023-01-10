@@ -160,7 +160,7 @@ taxa <- assignTaxonomy(seqtab.nochim, "silva_nr99_v138.1_train_set.fa.gz?downloa
 ```
 
 ```{r afficher la taxonomie}
-# Suppression des noms de sequence pour l'affichage uniquement
+# Suppression des noms de sequence pour l'affichage de la taxo uniquement
 taxa.print <- taxa
 rownames(taxa.print) <- NULL
 head(taxa.print)
